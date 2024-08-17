@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="version" content="1.0.0">
+		<title>CursR</title>
+		<meta name="author" content="Toby Butchart">
+		<meta name="description" content="Use a mobile device as a laser pointer">
+		<meta name="subject" content="CursR">
+		<meta name="application-name" content="CursR">
+		<meta name="theme-color" content="#008080">
+		<meta name="msapplication-TileColor" content="#008080">
+		<meta property="og:url" content="">
+		<meta property="og:locale" content="en">
+		<meta property="og:type" content="website">
+		<meta property="og:title" content="CursR">
+		<meta property="og:image" content="img/icons/android-chrome-512x512.png">
+		<meta property="og:image:alt" content="CursR">
+		<meta property="og:description" content="Use a mobile device as a laser pointer">
+		<meta property="og:site_name" content="CursR">
+		<meta property="article:author" content="Toby Butchart">
+		<meta name="twitter:url" content="">
+		<meta name="twitter:title" content="CursR">
+		<meta name="twitter:card" content="summary">
+		<meta name="twitter:description" content="Use a mobile device as a laser pointer">
+		<meta name="twitter:image" content="/img/icons/android-chrome-512x512.png">
+		<meta name="twitter:image:alt" content="CursR">
+		<link rel="apple-touch-icon-precomposed" href="img/icons/favicon-32x32.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="img/icons/apple-touch-icon.png">
+		<link rel="icon" type="image/png" href="img/icons/favicon-16x16.png" sizes="16x16">
+		<link rel="icon" type="image/png" href="img/icons/favicon-32x32.png" sizes="32x32">
+		<link rel="icon" type="image/png" href="img/icons/apple-touch-icon.png" sizes="180x180">
+		<link rel="icon" type="image/png" href="img/icons/android-chrome-192x192.png" sizes="192x192">
+		<link rel="icon" type="image/png" href="img/icons/android-chrome-512x512.png" sizes="512x512">
+		<link rel="shortcut icon" href="img/icons/favicon-32x32.png">
+		<link rel="icon" type="image/png" href="img/icons/favicon-32x32.png">
+		<!--[if IE]><link rel="SHORTCUT ICON" href="img/icons/favicon.ico"/><![endif]-->
+		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Pixelify+Sans">
+		<link rel="stylesheet" href="https://fonts.cdnfonts.com/css/nintendo-ds-bios">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+		<link rel="stylesheet" href="css/style.min.css?v=1.0.0">
+	</head>
+	<body>
+		<!-- cursr modal start -->
+		<div id="cursr-modal" class="modal">
+			<div class="modal-content">
+				<div class="modal-header">
+                    <span class="modal-title"><b>CursR</b></span>
+					<span id="cursr-modal-close-icon" class="close" onclick="Modal.hide('cursr-modal')">&times;</span>
+					<span id="cursr-modal-fullscreen-icon" class="close" onclick="Modal.toggleFullscreen('cursr-modal')">&#9723;</span>
+					<span id="cursr-modal-minimise-icon" class="close" onclick="Modal.minimise('cursr-modal')">&#9601;</span>
+				</div>
+				<div class="modal-body">
+					<form>
+						<fieldset>
+							<legend>Host</legend>
+							<p class="wdth-100 centre-align" id="cursr-host-connection-id"></p>
+                            <button class="wdth-100" type="button" onclick="connectHost()">Connect Host&nbsp;<img src="img/connect-peer.png" alt=""></button>
+							<button class="wdth-100" type="button" onclick="disconnectCursR()">Disconnect&nbsp;<img src="img/disconnect.png" alt=""></button>
+						</fieldset>
+						<fieldset>
+							<legend>Connection</legend>
+							<table class="wdth-100">
+								<tr><td><label for="cursr-connection-id">ID:</label></td><td class="wdth-100"><input id="cursr-connection-id" class="wdth-100" type="text" value="cursr-123-456"></td></tr>
+							</table>
+                            <button class="wdth-100" type="button" onclick="connectCursR()">Connect CursR&nbsp;<img src="img/connect.png" alt=""></button>
+						</fieldset>
+						<fieldset>
+							<legend>CursR</legend>
+                            <button class="wdth-100" type="button" onclick="calibrateCursR()">Calibrate&nbsp;<img src="img/calibrate.png" alt=""></button>
+                            <button class="wdth-49 hght-120" type="button" onclick="clickCursR()">Click&nbsp;<img src="img/cursor.png" alt=""></button>
+							<button class="wdth-49 hght-120" type="button" onclick="doubleClickCursR()">Double Click&nbsp;<img src="img/cursor-double.png" alt=""></button>
+						</fieldset>
+					</form>
+					<p class="wdth-100 centre-align">Version&nbsp;<span id="about-version"></span></p>
+					<p class="wdth-100 centre-align">&copy;&nbsp;<span id="about-year"></span></p>
+				</div>
+				<div class="modal-status-panel bg-clr-med">
+					<div class="modal-status-panel-inner">
+						<p>Status:&nbsp;<span id="cursr-modal-status" data-clear-on-hide="true"></span></p>
+					</div>
+				</div>
+				<div class="modal-footer bg-clr-med">
+					<button class="btn-close-modal" onclick="Modal.hide('cursr-modal')">Close&nbsp;<img src="img/close.png" alt=""></button>
+				</div>
+			</div>
+		</div>
+		<!-- cursr modal end -->
+
+        <!-- excel modal start -->
+		<div id="excel-modal" class="modal">
+			<div class="modal-content">
+				<div class="modal-header">
+                    <span class="modal-title"><b>Excel</b></span>
+					<span id="excel-modal-close-icon" class="close" onclick="Modal.hide('excel-modal')">&times;</span>
+					<span id="excel-modal-fullscreen-icon" class="close" onclick="Modal.toggleFullscreen('excel-modal')">&#9723;</span>
+					<span id="excel-modal-minimise-icon" class="close" onclick="Modal.minimise('excel-modal')">&#9601;</span>
+				</div>
+				<div class="modal-body" style="overflow: hidden;">
+                    <img class="wdth-100" src="img/fake-graph.png" alt="Excel">
+				</div>
+				<div class="modal-footer bg-clr-med">
+					<button class="btn-close-modal" onclick="Modal.hide('excel-modal')">Close&nbsp;<img src="img/close.png" alt=""></button>
+				</div>
+			</div>
+		</div>
+		<!-- excel modal end -->
+
+        <!-- settings modal start -->
+		<div id="settings-modal" class="modal">
+			<div class="modal-content">
+				<div class="modal-header">
+                    <span class="modal-title"><b>Settings</b></span>
+					<span id="settings-modal-close-icon" class="close" onclick="Modal.hide('settings-modal')">&times;</span>
+					<span id="settings-modal-fullscreen-icon" class="close" onclick="Modal.toggleFullscreen('settings-modal')">&#9723;</span>
+					<span id="settings-modal-minimise-icon" class="close" onclick="Modal.minimise('settings-modal')">&#9601;</span>
+				</div>
+				<div class="modal-body">
+                    <form>
+                        <fieldset>
+                            <legend>CursR</legend>
+							<table class="wdth-100">
+								<tr><td class="wdth-50"><label for="settings-fade">Fade On Inactive</label></td><td class="wdth-50"><input id="settings-fade" type="checkbox" data-settings="true" data-setting="fadeOnInactive"></td></tr>
+								<tr><td class="wdth-50"><label for="settings-fit-screen">Fit Screen</label></td><td class="wdth-50"><input id="settings-fit-screen" type="checkbox" data-settings="true" data-setting="fitToScreen"></td></tr>
+								<tr>
+									<td class="wdth-50">
+										<label for="settings-sensitivity">Sensitivity:</label>
+									</td>
+									<td class="wdth-50">
+										<select name="settings-sensitivity" id="settings-sensitivity" class="wdth-100" data-settings="true" data-setting="sensitivity">
+											<option value="1">Light sensitivity</option>
+											<option value="2">Sensitive</option>
+											<option value="3">Very sensitive</option>
+										</select>
+									</td>
+								</tr>
+								<tr><td class="wdth-50"><label for="settings-polling-interval">Polling Interval (MS):</label></td><td class="wdth-50"><input id="settings-polling-interval" class="wdth-100" type="number" value="50" data-settings="true" data-setting="pollingInterval"></td></tr>
+								<tr>
+									<td class="wdth-50">
+										<label for="settings-cursr-type">CursR Type:</label>
+									</td>
+									<td class="wdth-50">
+										<select name="settings-cursr-type" id="settings-cursr-type" class="wdth-100" data-settings="true" data-setting="cursrType">
+											<option value="Heart">Heart</option>
+											<option value="Diamond">Diamond</option>
+											<option value="Crosshair">Crosshair</option>
+											<option value="LaserPointer">Laser pointer</option>
+											<option value="Cursor">Cursor</option>
+											<option value="Poop">Poop</option>
+											<option value="Rocket">Rocket</option>
+											<option value="Baguette">Baguette</option>
+											<option value="Aubergine">Aubergine</option>
+										</select>
+									</td>
+								</tr>
+								<tr><td class="wdth-50"><label for="settings-cursr-border">CursR Border</label></td><td class="wdth-50"><input id="settings-cursr-border" type="checkbox" data-settings="true" data-setting="cursrBorder"></td></tr>
+							</table>
+                        </fieldset>
+						<fieldset>
+							<legend>Gyroscope</legend>
+							<table class="wdth-100">
+								<tr>
+									<td><label for="settings-alpha-min">Alpha Min:</label></td>
+									<td><input id="settings-alpha-min" class="input-gyro-settings" type="number" value="0" data-settings="true" data-setting="alphaMin"></td>
+									<td><label for="settings-alpha-max">Alpha Max:</label></td>
+									<td><input id="settings-alpha-max" class="input-gyro-settings" type="number" value="0" data-settings="true" data-setting="alphaMax"></td>
+								</tr>
+								<tr>
+									<td><label for="settings-beta-min">Beta Min:</label></td>
+									<td><input id="settings-beta-min" class="input-gyro-settings" type="number" value="0" data-settings="true" data-setting="betaMin"></td>
+									<td><label for="settings-beta-max">Beta Max:</label></td>
+									<td><input id="settings-beta-max" class="input-gyro-settings" type="number" value="0" data-settings="true" data-setting="betaMax"></td>
+								</tr>
+								<tr>
+									<td><label for="settings-gamma-min">Gamma Min:</label></td>
+									<td><input id="settings-gamma-min" class="input-gyro-settings" type="number" value="0" data-settings="true" data-setting="gammaMin"></td>
+									<td><label for="settings-gamma-max">Gamma Max:</label></td>
+									<td><input id="settings-gamma-max" class="input-gyro-settings" type="number" value="0" data-settings="true" data-setting="gammaMax"></td>
+								</tr>
+							</table>
+						</fieldset>
+						<fieldset>
+                            <legend>General</legend>
+							<table class="wdth-100">
+								<tr><td class="wdth-50"><label for="settings-bypass-splash">Bypass Splash Screen</label></td><td class="wdth-50"><input id="settings-bypass-splash" type="checkbox" data-settings="true" data-setting="bypassSplash"></td></tr>
+							</table>
+                        </fieldset>
+						<fieldset>
+                            <legend>LogR</legend>
+							<table class="wdth-100">
+								<tr><td class="wdth-50"><label for="settings-enable-logs">Enable Logs</label></td><td class="wdth-50"><input id="settings-enable-logs" type="checkbox" data-settings="true" data-setting="enableLogs"></td></tr>
+								<tr><td class="wdth-50"><label for="settings-log-to-console">Log to Console</label></td><td class="wdth-50"><input id="settings-log-to-console" type="checkbox" data-settings="true" data-setting="logToConsole"></td></tr>
+								<tr>
+									<td class="wdth-50"><label for="settings-log-level">Log to Console</label></td>
+									<td class="wdth-50">
+										<select name="settings-log-level" id="settings-log-level" class="wdth-100" data-settings="true" data-setting="logLevel">
+											<option value="0">All Logs</option>
+											<option value="1">Info, Warning and Errors</option>
+											<option value="2">Warning and Errors</option>
+											<option value="3">Errors Only</option>
+										</select>
+									</td>
+								</tr>
+							</table>
+                        </fieldset>
+                    </form>
+				</div>
+				<div class="modal-status-panel bg-clr-med">
+					<div class="modal-status-panel-inner">
+						<p>Status:&nbsp;<span id="settings-modal-status" data-clear-on-hide="true"></span></p>
+					</div>
+				</div>
+				<div class="modal-footer bg-clr-med">
+					<button class="btn-close-modal" onclick="Modal.hide('settings-modal')">Close&nbsp;<img src="img/close.png" alt=""></button>
+					<button class="btn-close-modal" type="button" onclick="saveSettings()">Save&nbsp;<img src="img/save.png" alt=""></button>
+					<button class="btn-close-modal" type="button" onclick="clearSettings()">Delete&nbsp;<img src="img/clear.png" alt=""></button>
+				</div>
+			</div>
+		</div>
+		<!-- settings modal end -->
+
+        <!-- logs modal start -->
+		<div id="logs-modal" class="modal">
+			<div class="modal-content">
+				<div class="modal-header">
+                    <span class="modal-title"><b>Logs</b></span>
+					<span id="logs-modal-close-icon" class="close" onclick="Modal.hide('logs-modal')">&times;</span>
+					<span id="logs-modal-fullscreen-icon" class="close" onclick="Modal.toggleFullscreen('logs-modal')">&#9723;</span>
+					<span id="logs-modal-minimise-icon" class="close" onclick="Modal.minimise('logs-modal')">&#9601;</span>
+				</div>
+				<div class="modal-body">
+                    <div id="logs">
+
+                    </div>
+				</div>
+				<div class="modal-footer bg-clr-med">
+					<button class="btn-close-modal" onclick="Modal.hide('logs-modal')">Close&nbsp;<img src="img/close.png" alt=""></button>
+					<button class="btn-close-modal" onclick="clearLogs()">Clear&nbsp;<img src="img/clear.png" alt=""></button>
+					<button class="btn-close-modal" onclick="downloadLogs()">Download&nbsp;<img src="img/download.png" alt=""></button>
+					<button class="btn-close-modal" onclick="openLogsInNewWindow()">Open&nbsp;<img src="img/new-window.png" alt=""></button>
+				</div>
+			</div>
+		</div>
+		<!-- logs modal end -->
+
+		<!-- media modal start -->
+		<div id="media-modal" class="modal">
+			<div class="modal-content">
+				<div class="modal-header">
+                    <span class="modal-title"><b>Media Player</b></span>
+					<span id="media-modal-close-icon" class="close" onclick="Modal.hide('media-modal')">&times;</span>
+					<span id="media-modal-fullscreen-icon" class="close" onclick="Modal.toggleFullscreen('media-modal')">&#9723;</span>
+					<span id="media-modal-minimise-icon" class="close" onclick="Modal.minimise('media-modal')">&#9601;</span>
+				</div>
+				<div class="modal-body">
+					<div class="navbar">
+						<div class="dropdown">
+							<button class="dropbtn"><u>F</u>ile</button>
+							<div class="dropdown-content">
+								<a href="#">Link 1</a>
+								<a href="#">Link 2</a>
+								<a href="#">Link 3</a>
+							</div>
+						</div>
+						<div class="dropdown">
+							<button class="dropbtn"><u>E</u>dit</button>
+							<div class="dropdown-content">
+								<a href="#">Link 1</a>
+								<a href="#">Link 2</a>
+								<a href="#">Link 3</a>
+							</div>
+						</div>
+						<div class="dropdown">
+							<button class="dropbtn"><u>V</u>iew</i></button>
+							<div class="dropdown-content">
+								<a href="#">Link 1</a>
+								<a href="#">Link 2</a>
+								<a href="#">Link 3</a>
+							</div>
+						</div>
+					</div>
+                    <div id="media-player">
+						<!-- <fieldset>
+							<legend>DoofR</legend>
+							<table class="wdth-100">
+								<tr>
+									<td><label for="doofr-connection-id">ID:</label></td>
+									<td class="wdth-100"><input id="doofr-connection-id" class="wdth-100" type="text" value="doofr-123-456"></td>
+								</tr>
+							</table>
+                            <button class="wdth-100" type="button" onclick="connectDoofR()">Connect DoofR&nbsp;<img src="img/connect.png" alt=""></button>
+						</fieldset> -->
+						<div id="media-player-viewer">
+							<video controls>
+								<source src="video/snowbrd.mp4" type="video/mp4">
+								Your browser does not support the video tag.
+							</video>
+						</div>
+						<div id="media-player-controls">
+							<table class="wdth-100">
+								<tr>
+									<td><button class="wdth-100"><i class="material-icons">play_arrow</i></button></td>
+									<td><button class="wdth-100"><i class="material-icons">pause</i></button></td>
+									<td><button class="wdth-100"><i class="material-icons">stop</i></button></td>
+									<td><button class="wdth-100"><i class="material-icons">skip_previous</i></button></td>
+									<td><button class="wdth-100"><i class="material-icons">fast_rewind</i></button></td>
+									<td><button class="wdth-100"><i class="material-icons">fast_forward</i></button></td>
+									<td><button class="wdth-100"><i class="material-icons">skip_next</i></button></td>
+									<td><button class="wdth-100"><i class="material-icons">volume_down</i></button></td>
+									<td><button class="wdth-100"><i class="material-icons">volume_up</i></button></td>
+									<td><button class="wdth-100"><i class="material-icons">volume_off</i></button></td>
+								</tr>
+							</table>
+						</div>
+                    </div>
+				</div>
+				<div class="modal-footer bg-clr-med">
+					<button class="btn-close-modal" onclick="Modal.hide('media-modal')">Close&nbsp;<img src="img/close.png" alt=""></button>
+				</div>
+			</div>
+		</div>
+		<!-- media modal end -->
+
+		<!-- remote modal start -->
+		<div id="remote-modal" class="modal">
+			<div class="modal-content">
+				<div class="modal-body" id="remote">
+                    <div>
+						<!-- <table id="tbl-remote">
+							<tr>
+								<td></td>
+								<td></td>
+								<td><img src="img/remote-buttons/1.png" alt="" onclick="Modal.hide('remote-modal');"></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td><img src="img/remote-buttons/2.png" alt=""></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td><img src="img/remote-buttons/3.png" alt=""></td>
+								<td><img src="img/remote-buttons/4.png" alt=""></td>
+								<td><img src="img/remote-buttons/5.png" alt=""></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td><img src="img/remote-buttons/6.png" alt=""></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td><img src="img/remote-buttons/7.png" alt=""></td>
+								<td><img src="img/remote-buttons/8.png" alt=""></td>
+								<td><img src="img/remote-buttons/9.png" alt=""></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td><img src="img/remote-buttons/10.png" alt=""></td>
+								<td></td>
+							</tr>
+						</table> -->
+						<table id="tbl-remote">
+							<tr>
+								<td></td>
+								<td></td>
+								<td><button class="wdth-100" onclick="Modal.hide('remote-modal');"><i class="material-icons">power_settings_new</i></button></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td><button class="wdth-100"><i class="material-icons">arrow_upward</i></button></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td><button class="wdth-100"><i class="material-icons">arrow_back</i></button></td>
+								<td><button class="wdth-100"><i class="material-icons">home</i></button></td>
+								<td><button class="wdth-100"><i class="material-icons">arrow_forward</i></button></td>
+							</tr>
+							<tr>
+								<td></td>
+								<td><button class="wdth-100"><i class="material-icons">arrow_downward</i></button></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td><button class="wdth-100"><i class="material-icons">fast_rewind</i></button></td>
+								<td><button class="wdth-100"><i class="material-icons">play_arrow</i></button></td>
+								<td><button class="wdth-100"><i class="material-icons">fast_forward</i></button></td>
+							</tr>
+							<tr>
+								<td><button class="wdth-100"><i class="material-icons">skip_previous</i></button></td>
+								<td><button class="wdth-100"><i class="material-icons">stop</i></button></td>
+								<td><button class="wdth-100"><i class="material-icons">skip_next</i></button></td>
+							</tr>
+							<tr>
+								<td><button class="wdth-100"><i class="material-icons">volume_down</i></button></td>
+								<td><button class="wdth-100"><i class="material-icons">volume_off</i></button></td>
+								<td><button class="wdth-100"><i class="material-icons">volume_up</i></button></td>
+							</tr>
+						</table>
+                    </div>
+				</div>
+			</div>
+		</div>
+		<!-- remote modal end -->
+
+		<!-- game modal start -->
+		<div id="game-modal" class="modal">
+			<div id="game-modal-content" class="modal-content">
+				<div class="modal-header">
+                    <span class="modal-title"><b>Emoji Sniper</b></span>
+					<span id="game-modal-close-icon" class="close" onclick="Modal.hide('game-modal')">&times;</span>
+					<span id="game-modal-fullscreen-icon" class="close" onclick="Modal.toggleFullscreen('game-modal')">&#9723;</span>
+					<span id="game-modal-minimise-icon" class="close" onclick="Modal.minimise('game-modal')">&#9601;</span>
+				</div>
+				<div class="modal-body">
+                    <div id="game">
+
+                    </div>
+				</div>
+				<div class="modal-status-panel bg-clr-med">
+					<div class="modal-status-panel-inner">
+						<p>Status:&nbsp;<span id="game-modal-status" data-clear-on-hide="true"></span></p>
+					</div>
+				</div>
+				<div class="modal-footer bg-clr-med">
+					<button class="btn-close-modal" onclick="Modal.hide('game-modal')">Close&nbsp;<img src="img/close.png" alt=""></button>
+					<button id="btn-start-game" class="btn-close-modal" onclick="startGame()">Start&nbsp;<img src="img/start.png" alt=""></button>
+				</div>
+			</div>
+		</div>
+		<!-- game modal end -->
+
+        <!-- test modal start -->
+		<div id="test-modal" class="modal">
+			<div class="modal-content">
+				<div class="modal-header">
+                    <span class="modal-title"><b>Test</b></span>
+					<span id="test-modal-close-icon" class="close" onclick="Modal.hide('test-modal')">&times;</span>
+					<span id="test-modal-fullscreen-icon" class="close" onclick="Modal.toggleFullscreen('test-modal')">&#9723;</span>
+					<span id="test-modal-minimise-icon" class="close" onclick="Modal.minimise('test-modal')">&#9601;</span>
+				</div>
+				<div class="modal-body">
+                    <form>
+                        <fieldset>
+                            <legend>Real Cursor Position</legend>
+							<table class="wdth-100">
+								<tr><td class="wdth-50"><label for="cursor-x">X:</label></td><td class="wdth-50"><input id="cursor-x" class="wdth-100" type="number" value="0" readonly></td></tr>
+								<tr><td class="wdth-50"><label for="cursor-y">Y:</label></td><td class="wdth-50"><input id="cursor-y" class="wdth-100" type="number" value="0" readonly></td></tr>
+							</table>
+                        </fieldset>
+                        <fieldset>
+                            <legend>Move CursR by coordinates</legend>
+							<table class="wdth-100">
+								<tr><td class="wdth-50"><label for="move-x">X:</label></td><td class="wdth-50"><input id="move-x" class="wdth-100" type="number" value="0"></td></tr>
+								<tr><td class="wdth-50"><label for="move-y">Y:</label></td><td class="wdth-50"><input id="move-y" class="wdth-100" type="number" value="0"></td></tr>
+								<tr><td class="wdth-50"><label for="move-z">Z:</label></td><td class="wdth-50"><input id="move-z" class="wdth-100" type="number" value="0"></td></tr>
+							</table>
+							<table class="wdth-100">
+								<tr><td class="wdth-50"><label for="move-polling-interval">Polling Interval (MS):</label></td><td class="wdth-50"><input id="move-polling-interval" class="wdth-100" type="number" value="50"></td></tr>
+							</table>
+                            <button class="wdth-49" type="button" onclick="testMove()">Move&nbsp;<img src="img/move.png" alt=""></button>
+                            <button id="btn-start-timer" class="wdth-49" type="button" onclick="startTimer()">Start Timer&nbsp;<img src="img/timer.png" alt=""></button>
+                        </fieldset>
+						<fieldset>
+                            <legend>Move CursR by gyroscope</legend>
+							<table class="wdth-100">
+								<tr>
+									<td class="wdth-10"><label for="move-alpha">A:</label></td>
+									<td class="wdth-30"><input id="move-alpha" type="number" value="0"></td>
+									<td class="wdth-10"><label for="move-alpha-cp">CP:</label></td>
+									<td class="wdth-30"><input id="move-alpha-cp" type="number" value="0"></td>
+								</tr>
+								<tr>
+									<td class="wdth-10"><label for="move-beta">B:</label></td>
+									<td class="wdth-30"><input id="move-beta" type="number" value="0"></td>
+									<td class="wdth-10"><label for="move-beta-cp">CP:</label></td>
+									<td class="wdth-30"><input id="move-beta-cp" type="number" value="0"></td>
+								</tr>
+								<tr>
+									<td class="wdth-10"><label for="move-gamma">C:</label></td>
+									<td class="wdth-30"><input id="move-gamma" type="number" value="0"></td>
+									<td class="wdth-10"><label for="move-gamma-cp">CP:</label></td>
+									<td class="wdth-30"><input id="move-gamma-cp" type="number" value="0"></td>
+								</tr>
+							</table>
+							<button class="wdth-49" type="button" onclick="testMoveFromGyro()">Move&nbsp;<img src="img/move-gyro.png" alt=""></button>
+							<button id="btn-start-timer-gyro" class="wdth-49" type="button" onclick="startTimerFromGyro()">Start Timer&nbsp;<img src="img/timer.png" alt=""></button>
+                        </fieldset>
+                        <fieldset>
+                            <legend>Logging</legend>
+							<table class="wdth-100">
+								<tr>
+									<td class="wdth-30">
+										<label for="test-log-message">Log Entry/Type:</label>
+									</td>
+									<td class="wdth-30">
+										<select name="test-log-type" id="test-log-type" class="wdth-100">
+			                                <option value="Debug">Debug</option>
+			                                <option value="Info">Info</option>
+			                                <option value="Warning">Warning</option>
+			                                <option value="Error">Error</option>
+			                            </select>
+									</td>
+									<td class="wdth-30">
+										<input id="test-log-message" class="wdth-100" type="text" value="test log">
+									</td>
+								</tr>
+							</table>
+                            <button class="wdth-100" type="button" onclick="testLog()">Add Log&nbsp;<img src="img/log.png" alt=""></button>
+							<table class="wdth-100">
+								<tr><td class="wdth-50"><label for="test-log-multi-logs">Multiple Log Count:</label></td><td class="wdth-50"><input id="test-log-multi-logs" class="wdth-100" type="number" value="100"></td></tr>
+							</table>
+                            <button class="wdth-100" type="button" onclick="testMultipleLogs()">Add Multiple Logs&nbsp;<img src="img/multi-log.png" alt=""></button>
+                        </fieldset>
+						<fieldset>
+                            <legend>Gyroscope</legend>
+							<table class="wdth-100">
+								<tr><td class="wdth-50"><label for="gyro-alpha">Alpha:</label></td><td class="wdth-50"><input id="gyro-alpha" class="wdth-100" type="number" value="0" readonly></td></tr>
+								<tr><td class="wdth-50"><label for="gyro-beta">Beta</label></td><td class="wdth-50"><input id="gyro-beta" class="wdth-100" type="number" value="0" readonly></td></tr>
+								<tr><td class="wdth-50"><label for="gyro-gamma">Gamma:</label></td><td class="wdth-50"><input id="gyro-gamma" class="wdth-100" type="number" value="0" readonly></td></tr>
+							</table>
+                        </fieldset>
+						<fieldset>
+                            <legend>ClickR</legend>
+							<table class="wdth-100">
+								<tr>
+									<td class="wdth-50"><label for="test-clickr-double">Double Click</label></td>
+									<td class="wdth-50"><input id="test-clickr-double" class="wdth-100" type="checkbox"></td>
+								</tr>
+								<tr>
+									<td class="wdth-50"><label for="test-clickr-close">Close Before Test</label></td>
+									<td class="wdth-50"><input id="test-clickr-close" class="wdth-100" type="checkbox"></td>
+								</tr>
+								<tr>
+									<td class="wdth-50"><label for="test-clickr-id">ID:</label></td>
+									<td class="wdth-50"><input id="test-clickr-id" class="wdth-100" type="text" value="start-btn"></td>
+								</tr>
+								<tr>
+									<td colspan="2"><button class="wdth-100" type="button" onclick="testClickRByID()">Test by ID<img src="img/cursor-ds.png" alt=""></button></td>
+								</tr>
+								<tr>
+									<td class="wdth-50"><label for="test-clickr-x">X:</label></td>
+									<td><input id="test-clickr-x" class="wdth-100" type="number" value="1852" placeholder="X"></td>
+								</tr>
+								<tr>
+									<td class="wdth-50"><label for="test-clickr-y">Y:</label></td>
+									<td><input id="test-clickr-y" class="wdth-100" type="number" value="902" placeholder="Y"></td>
+								</tr>
+								<tr>
+									<td colspan="2"><button class="wdth-100" type="button" onclick="testClickRByCoordinates()">Test by Coordinates<img src="img/cursor-ds.png" alt=""></button></td>
+								</tr>
+								<tr>
+									<td class="wdth-50"><label for="test-clickr-class">Class:</label></td>
+									<td class="wdth-50"><input id="test-clickr-class" class="wdth-100" type="text" value="clickr-friendly"></td>
+								</tr>
+								<tr>
+									<td colspan="2"><button class="wdth-100" type="button" onclick="testClickRByClassName()">Test by Class Name<img src="img/cursor-ds.png" alt=""></button></td>
+								</tr>
+							</table>
+                        </fieldset>
+                    </form>
+				</div>
+				<div class="modal-footer bg-clr-med">
+					<button class="btn-close-modal" onclick="Modal.hide('test-modal')">Close&nbsp;<img src="img/close.png" alt=""></button>
+				</div>
+			</div>
+		</div>
+		<!-- test modal end -->
+
+		<!-- help modal start -->
+		<div id="help-modal" class="modal">
+			<div class="modal-content">
+				<div class="modal-header">
+                    <span class="modal-title"><b>Help</b></span>
+					<span id="help-modal-close-icon" class="close" onclick="Modal.hide('help-modal')">&times;</span>
+					<span id="help-modal-fullscreen-icon" class="close" onclick="Modal.toggleFullscreen('help-modal')">&#9723;</span>
+					<span id="help-modal-minimise-icon" class="close" onclick="Modal.minimise('help-modal')">&#9601;</span>
+				</div>
+				<div class="modal-body">
+					<iframe src="help/CursR.html" title="description"></iframe>
+				</div>
+				<div class="modal-footer bg-clr-med">
+					<button class="btn-close-modal" onclick="Modal.hide('help-modal')">Close&nbsp;<img src="img/close.png" alt=""></button>
+				</div>
+			</div>
+		</div>
+		<!-- help modal end -->
+
+		<!-- start menu start -->
+		<div id="start-modal" class="modal modal-bottom">
+			<div class="modal-content modal-content-bottom modal-content-start">
+				<div class="modal-header">
+                    <span class="modal-title"><b>Start</b></span>
+				</div>
+				<div class="modal-body">
+					<hr>
+					<table id="tbl-start-menu">
+						<tr ondblclick="launchExe(this)" data-exe-type="help">
+	                        <td><img src="img/help_2.png" alt="Help"></td><td><p>Help</p></td>
+	                    </tr>
+	                    <tr onclick="launchExe(this)" data-exe-type="settings">
+	                        <td><img src="img/PC.png" alt="Settings"></td><td><p>Settings</p></td>
+	                    </tr>
+	                    <tr onclick="launchExe(this)" data-exe-type="logs">
+	                        <td><img src="img/Logs.png" alt="Logs"></td><td><p>Logs</p></td>
+	                    </tr>
+	                    <tr onclick="launchExe(this)" data-exe-type="test">
+	                        <td><img src="img/Test.png" alt="Test"></td><td><p>Test</p></td>
+	                    </tr>
+						<tr onclick="shutDown()">
+	                        <td><img src="img/ShutDown.png" alt="Shut Down"></td><td><p>Shut Down</p></td>
+	                    </tr>
+	                </table>
+					<hr>
+				</div>
+			</div>
+		</div>
+		<!-- start menu end -->
+
+		<!-- main content start -->
+		<div style="display: block;">
+			<div id="home-main-container">
+                <table id="tbl-desktop-icons">
+                    <tr ondblclick="launchExe(this)" data-exe-type="cursr">
+                        <td><img src="img/cursor-icon.png" alt="CursR"><p>CursR</p></td>
+                    </tr>
+                    <tr ondblclick="launchExe(this)" data-exe-type="excel">
+                        <td><img src="img/Excel_97.png" alt="Excel"><p>Excel</p></td>
+                    </tr>
+                    <!-- <tr ondblclick="launchExe(this)" data-exe-type="settings">
+                        <td><img src="img/PC.png" alt="Settings"><p>Settings</p></td>
+                    </tr> -->
+                    <!-- <tr ondblclick="launchExe(this)" data-exe-type="logs">
+                        <td><img src="img/Logs.png" alt="Logs"><p>Logs</p></td>
+                    </tr> -->
+                    <!-- <tr ondblclick="launchExe(this)" data-exe-type="test">
+                        <td><img src="img/Test.png" alt="Test"><p>Test</p></td>
+                    </tr> -->
+					<tr ondblclick="launchExe(this)" data-exe-type="media">
+                        <td><img src="img/media-player.png" alt="Media Player"><p>Media Player</p></td>
+                    </tr>
+					<tr ondblclick="launchExe(this)" data-exe-type="remote">
+                        <td><img src="img/remote.png" alt="DoofR"><p>DoofR</p></td>
+                    </tr>
+					<tr ondblclick="launchExe(this)" data-exe-type="game">
+                        <td><img src="img/emoji-sniper-icon.png" alt="Emoji Sniper"><p>Emoji Sniper</p></td>
+                    </tr>
+					<!-- <tr ondblclick="launchExe(this)" data-exe-type="help">
+                        <td><img src="img/Help.png" alt="Help"><p>Help</p></td>
+                    </tr> -->
+                </table>
+            </div>
+		</div>
+		<!-- main content emd -->
+
+		<!-- main footer start -->
+		<div class="main-footer bg-clr-med">
+			<div><!-- alert('&#128187;') -->
+				<span class="main-footer-container clickr-friendly" id="start-btn" onclick="Modal.show('start-modal')" ondblclick="alert('&#128187;&#128433;')"><img id="start-btn-logo" src="img/win.png" width="21px" height="20px" alt="Start">Start</span>
+                <span class="main-footer-clock"><img src="img/wav-16.png" alt="" class="clickr-friendly" onclick="alert('&#128266;')" ondblclick="alert('&#128266;&#128433;')">&nbsp;<span id="clock" class="clickr-friendly" onclick="alert('&#128338;')" ondblclick="alert('&#128338;&#128433;')">9:48 PM</span></span>
+			</div>
+		</div>
+		<!-- main footer end -->
+
+		<!-- bios/splash start -->
+		<div id="bios">
+			<div id="bios-img">
+				<img id="energy-icon" src="img/bios-and-name.png" alt="">
+			</div>
+			<div id="bios-text">
+				<p class="bios-text-lg">Copyright (C) 1982-<span id="bios-year">2000</span></p>
+				<br>
+				<br>
+			</div>
+		</div>
+
+		<div id="splash">
+			<img id="splash" src="img/toby-butchart-98.png" alt="">
+		</div>
+		<!-- bios/splash end -->
+
+        <!-- <div id="CursR">&hearts;</div> -->
+		<div id="CursR"><img src="img/CursR-alpha.png" alt=""></div>
+
+		<script type="text/javascript" src="js/meta.js?v=1.0.0"></script>
+		<script type="text/javascript" src="js/settings.js?v=1.0.0"></script>
+		<script type="text/javascript" src="js/modal.js?v=1.0.0"></script>
+		<script type="text/javascript" src="js/uuid.js?v=1.0.0"></script>
+		<script type="text/javascript" src="js/peer.min.js?v=1.0.0"></script>
+		<script type="text/javascript" src="js/CursR.js?v=1.0.0"></script>
+		<script type="text/javascript" src="js/ClickR.js?v=1.0.0"></script>
+		<script type="text/javascript" src="js/LogR.js?v=1.0.0"></script>
+		<script type="text/javascript" src="js/game.js?v=1.0.0"></script>
+		<script type="text/javascript" src="js/app.js?v=1.0.0"></script>
+		<script type="text/javascript" src="js/bindings.js?v=1.0.0"></script>
+		<script type="text/javascript">
+
+		</script>
+	</body>
+</html>
